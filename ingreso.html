@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>MedicalClub — Ingreso</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --or:#E8601A;--or-d:rgba(232,96,26,.12);
+  --bg:#F4F1EC;--sf:#FFFFFF;--sf2:#EDE9E3;
+  --tx:#1A1714;--tx-d:#6B6360;--tx-m:#B8B2AC;
+  --bd:rgba(0,0,0,.1);--gn:#16A34A;--rd:#DC2626;
+}
+html,body{height:100%;background:var(--bg);}
+body{font-family:'DM Sans',system-ui,sans-serif;color:var(--tx);-webkit-text-size-adjust:100%;}
+
+/* ── HEADER ─────────────────────────────── */
+.top{background:var(--sf);border-bottom:1px solid var(--bd);padding:18px 20px 16px;text-align:center;}
+.wordmark{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--tx);}
+.wordmark span{color:var(--or);}
+.tagline{font-size:12px;color:var(--tx-d);margin-top:3px;letter-spacing:.02em;}
+
+/* ── MAIN ────────────────────────────────── */
+.wrap{max-width:480px;margin:0 auto;padding:24px 20px 48px;}
+
+.card{background:var(--sf);border-radius:16px;padding:24px 20px;border:1px solid var(--bd);margin-bottom:16px;}
+.card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--tx);margin-bottom:4px;}
+.card-sub{font-size:13px;color:var(--tx-d);margin-bottom:20px;line-height:1.5;}
+
+/* ── FIELDS ──────────────────────────────── */
+.field{margin-bottom:16px;}
+.field:last-child{margin-bottom:0;}
+label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx-d);margin-bottom:6px;}
+input,select,textarea{
+  display:block;width:100%;
+  background:var(--sf2);border:1.5px solid var(--bd);
+  border-radius:10px;padding:13px 14px;
+  font-size:15px;font-family:inherit;color:var(--tx);
+  outline:none;transition:border-color .15s;
+  -webkit-appearance:none;appearance:none;
+}
+input:focus,select:focus{border-color:var(--or);}
+input::placeholder{color:var(--tx-m);}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6360' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* ── BOTÓN ───────────────────────────────── */
+.btn-submit{
+  display:block;width:100%;
+  background:var(--or);color:#fff;
+  border:none;border-radius:12px;
+  padding:16px 20px;
+  font-size:16px;font-weight:700;font-family:'Syne',sans-serif;
+  cursor:pointer;transition:opacity .15s;margin-top:8px;
+}
+.btn-submit:active{opacity:.85;}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;}
+.loader{display:none;text-align:center;padding:12px;color:var(--tx-d);font-size:14px;}
+
+/* ── ESTADO ÉXITO ────────────────────────── */
+#screen-ok{display:none;text-align:center;padding:48px 20px;}
+.ok-ico{font-size:64px;margin-bottom:20px;}
+.ok-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--tx);margin-bottom:10px;}
+.ok-sub{font-size:15px;color:var(--tx-d);line-height:1.6;max-width:300px;margin:0 auto;}
+.ok-badge{display:inline-block;background:var(--or-d);border:1px solid var(--or);color:var(--or);border-radius:100px;padding:8px 20px;font-size:13px;font-weight:700;margin-top:24px;}
+
+/* ── NOTA OPCIONAL ───────────────────────── */
+.nota{font-size:11px;color:var(--tx-m);margin-top:4px;}
+.req{color:var(--or);}
+
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1A1714;--sf:#242018;--sf2:#2E2A24;
+    --tx:#F4F1EC;--tx-d:#9E9890;--tx-m:#5C5850;
+    --bd:rgba(255,255,255,.09);
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="screen-form">
+  <div class="top">
+    <div class="wordmark">Medical<span>Club</span></div>
+    <div class="tagline">Evaluación Cardiovascular · Mendoza</div>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="card-title">Completá tus datos 👋</div>
+      <div class="card-sub">Así la secretaria ya te tiene cargado y la evaluación arranca sin demoras.</div>
+
+      <div class="field">
+        <label>Nombre y apellido <span class="req">*</span></label>
+        <input type="text" id="f-nombre" placeholder="Ej: Luciana Gómez" autocomplete="name" inputmode="text">
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Edad <span class="req">*</span></label>
+          <input type="number" id="f-edad" placeholder="25" min="10" max="99" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>Teléfono <span class="req">*</span></label>
+          <input type="tel" id="f-tel" placeholder="261 XXX XXXX" inputmode="tel" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Email <span class="nota">(opcional)</span></label>
+        <input type="email" id="f-mail" placeholder="tu@email.com" inputmode="email" autocomplete="email">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Tu actividad física</div>
+      <div class="card-sub">Esto ayuda al médico a contextualizar mejor tu evaluación.</div>
+
+      <div class="field">
+        <label>Deporte / actividad principal <span class="req">*</span></label>
+        <input type="text" id="f-dep" placeholder="Ej: Crossfit, Fútbol, Running...">
+      </div>
+
+      <div class="field">
+        <label>Nivel de actividad <span class="req">*</span></label>
+        <select id="f-nivel">
+          <option value="" disabled selected>Seleccioná...</option>
+          <option value="Recreativo">Recreativo — entreno por salud o placer</option>
+          <option value="Amateur">Amateur — compito a nivel amateur</option>
+          <option value="Competitivo">Competitivo — compito regularmente</option>
+          <option value="Elite">Elite — deporte de alto rendimiento</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>¿Primera vez en MedicalClub?</label>
+        <select id="f-primera">
+          <option value="si">Sí, es mi primera vez</option>
+          <option value="no">No, ya vine antes</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="btn-enviar" onclick="enviar()">Enviar mis datos →</button>
+    <div class="loader" id="loader">Enviando... un momento ⏳</div>
+  </div>
+</div>
+
+<!-- PANTALLA ÉXITO -->
+<div id="screen-ok">
+  <div class="ok-ico">✅</div>
+  <div class="ok-title">¡Todo listo!</div>
+  <div class="ok-sub">Tus datos llegaron. La secretaria te va a llamar en un momento para pasar.</div>
+  <div class="ok-badge">MedicalClub · Mendoza</div>
+</div>
+
+<script>
+var GS='https://script.google.com/macros/s/AKfycbz3tZkTVY_CYM5afzA0c3fQsg6-3Q34_LGxnVQbAxpWn11-ZGc0434seY8jOAGtogC9/exec';
+
+function v(id){return(document.getElementById(id)||{}).value||'';}
+function err(id){
+  var el=document.getElementById(id);
+  el.style.borderColor='var(--rd)';
+  el.focus();
+  setTimeout(function(){el.style.borderColor='';},2000);
+}
+
+async function enviar(){
+  var nombre=v('f-nombre').trim();
+  var edad=v('f-edad').trim();
+  var tel=v('f-tel').trim();
+  var dep=v('f-dep').trim();
+  var nivel=v('f-nivel');
+
+  if(!nombre){err('f-nombre');return;}
+  if(!edad){err('f-edad');return;}
+  if(!tel){err('f-tel');return;}
+  if(!dep){err('f-dep');return;}
+  if(!nivel){err('f-nivel');return;}
+
+  var btn=document.getElementById('btn-enviar');
+  var loader=document.getElementById('loader');
+  btn.disabled=true;
+  loader.style.display='block';
+
+  var data={
+    action:'saveIngreso',
+    ingreso:{
+      nombre:nombre,
+      edad:parseInt(edad)||0,
+      tel:tel,
+      mail:v('f-mail').trim(),
+      dep:dep,
+      nivel:nivel,
+      primera:v('f-primera'),
+      ts:Date.now()
+    }
+  };
+
+  try{
+    await fetch(GS,{
+      method:'POST',
+      redirect:'follow',
+      credentials:'omit',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(data)
+    });
+    document.getElementById('screen-form').style.display='none';
+    document.getElementById('screen-ok').style.display='block';
+  }catch(e){
+    btn.disabled=false;
+    loader.style.display='none';
+    alert('Hubo un error al enviar. Avisale a la secretaria.');
+  }
+}
+</script>
+</body>
+</html>
