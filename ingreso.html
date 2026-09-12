@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>MedicalClub — Ingreso</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --or:#E8601A;--or-d:rgba(232,96,26,.12);
+  --bg:#F4F1EC;--sf:#FFFFFF;--sf2:#EDE9E3;
+  --tx:#1A1714;--tx-d:#6B6360;--tx-m:#B8B2AC;
+  --bd:rgba(0,0,0,.1);--gn:#16A34A;--rd:#DC2626;
+}
+html,body{background:var(--bg);}
+body{font-family:'DM Sans',system-ui,sans-serif;color:var(--tx);-webkit-text-size-adjust:100%;}
+
+/* ── HEADER ─────────────────────────────── */
+.top{background:var(--sf);border-bottom:1px solid var(--bd);padding:18px 20px 16px;text-align:center;}
+.wordmark{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--tx);}
+.wordmark span{color:var(--or);}
+.tagline{font-size:12px;color:var(--tx-d);margin-top:3px;letter-spacing:.02em;}
+
+/* ── PROGRESS ────────────────────────────── */
+.progress-bar{background:var(--sf);border-bottom:1px solid var(--bd);padding:12px 20px;}
+.steps-row{display:flex;gap:0;max-width:480px;margin:0 auto;}
+.step-dot{flex:1;text-align:center;position:relative;}
+.step-dot::after{content:'';position:absolute;top:10px;left:50%;right:-50%;height:2px;background:var(--bd);z-index:0;}
+.step-dot:last-child::after{display:none;}
+.dot{width:20px;height:20px;border-radius:50%;background:var(--sf2);border:2px solid var(--bd);margin:0 auto 4px;position:relative;z-index:1;transition:all .2s;}
+.dot-label{font-size:9px;color:var(--tx-m);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.step-dot.active .dot{background:var(--or);border-color:var(--or);}
+.step-dot.active .dot-label{color:var(--or);}
+.step-dot.done .dot{background:var(--gn);border-color:var(--gn);}
+.step-dot.done .dot::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;}
+
+/* ── MAIN ────────────────────────────────── */
+.wrap{max-width:480px;margin:0 auto;padding:24px 20px 60px;}
+
+.screen{display:none;}
+.screen.active{display:block;}
+
+.card{background:var(--sf);border-radius:16px;padding:24px 20px;border:1px solid var(--bd);margin-bottom:16px;}
+.card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--tx);margin-bottom:4px;}
+.card-sub{font-size:13px;color:var(--tx-d);margin-bottom:20px;line-height:1.5;}
+
+/* ── FIELDS ──────────────────────────────── */
+.field{margin-bottom:16px;}
+.field:last-child{margin-bottom:0;}
+label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx-d);margin-bottom:6px;}
+input,select,textarea{
+  display:block;width:100%;
+  background:var(--sf2);border:1.5px solid var(--bd);
+  border-radius:10px;padding:13px 14px;
+  font-size:15px;font-family:inherit;color:var(--tx);
+  outline:none;transition:border-color .15s;
+  -webkit-appearance:none;appearance:none;
+}
+input:focus,select:focus{border-color:var(--or);}
+input::placeholder{color:var(--tx-m);}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6360' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+
+/* ── YES/NO TOGGLE ───────────────────────── */
+.yn-group{display:flex;gap:8px;}
+.yn-btn{
+  flex:1;padding:11px 10px;border-radius:10px;border:1.5px solid var(--bd);
+  background:var(--sf2);font-size:14px;font-weight:600;color:var(--tx-d);
+  cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;
+}
+.yn-btn.sel-si{border-color:var(--gn);background:rgba(22,163,74,.08);color:var(--gn);}
+.yn-btn.sel-no{border-color:var(--bd);background:var(--or-d);border-color:var(--or);color:var(--or);}
+
+/* ── BOTONES NAV ─────────────────────────── */
+.btn-row{display:flex;gap:10px;margin-top:8px;}
+.btn-next{
+  flex:1;background:var(--or);color:#fff;
+  border:none;border-radius:12px;
+  padding:16px 20px;
+  font-size:16px;font-weight:700;font-family:'Syne',sans-serif;
+  cursor:pointer;transition:opacity .15s;
+}
+.btn-back{
+  background:var(--sf2);color:var(--tx-d);
+  border:1.5px solid var(--bd);border-radius:12px;
+  padding:16px 20px;font-size:15px;font-weight:600;font-family:inherit;
+  cursor:pointer;white-space:nowrap;
+}
+.btn-next:active,.btn-back:active{opacity:.8;}
+.btn-next:disabled{opacity:.5;cursor:not-allowed;}
+.loader{display:none;text-align:center;padding:12px;color:var(--tx-d);font-size:14px;}
+
+/* ── ALERTA ──────────────────────────────── */
+.alert{background:rgba(232,96,26,.1);border:1px solid rgba(232,96,26,.3);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--or);line-height:1.5;margin-bottom:16px;}
+
+/* ── ESTADO ÉXITO ────────────────────────── */
+#screen-ok{display:none;text-align:center;padding:48px 20px;}
+.ok-ico{font-size:64px;margin-bottom:20px;}
+.ok-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--tx);margin-bottom:10px;}
+.ok-sub{font-size:15px;color:var(--tx-d);line-height:1.6;max-width:300px;margin:0 auto;}
+.ok-badge{display:inline-block;background:var(--or-d);border:1px solid var(--or);color:var(--or);border-radius:100px;padding:8px 20px;font-size:13px;font-weight:700;margin-top:24px;}
+
+/* ── NOTA OPCIONAL ───────────────────────── */
+.nota{font-size:11px;color:var(--tx-m);margin-top:4px;}
+.req{color:var(--or);}
+
+.section-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--or);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--or-d);}
+</style>
+</head>
+<body>
+
+<div id="screen-form">
+  <div class="top">
+    <div class="wordmark">Medical<span>Club</span></div>
+    <div class="tagline">Evaluación Cardiovascular · Mendoza</div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="steps-row">
+      <div class="step-dot active" id="pd1">
+        <div class="dot"></div>
+        <div class="dot-label">Datos</div>
+      </div>
+      <div class="step-dot" id="pd2">
+        <div class="dot"></div>
+        <div class="dot-label">Actividad</div>
+      </div>
+      <div class="step-dot" id="pd3">
+        <div class="dot"></div>
+        <div class="dot-label">Salud</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- PANTALLA 1: Datos personales -->
+    <div class="screen active" id="s1">
+      <div class="card">
+        <div class="card-title">Tus datos personales 👋</div>
+        <div class="card-sub">Completá antes de pasar al consultorio así arrancamos sin demoras.</div>
+
+        <div class="field">
+          <label>Nombre y apellido <span class="req">*</span></label>
+          <input type="text" id="f-nombre" placeholder="Ej: Luciana Gómez" autocomplete="name">
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Edad <span class="req">*</span></label>
+            <input type="number" id="f-edad" placeholder="25" min="10" max="99" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label>Teléfono <span class="req">*</span></label>
+            <input type="tel" id="f-tel" placeholder="261 XXX XXXX" autocomplete="tel">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email <span class="nota">(opcional)</span></label>
+          <input type="email" id="f-mail" placeholder="tu@email.com" autocomplete="email">
+        </div>
+
+        <div class="row3">
+          <div class="field">
+            <label>Peso (kg) <span class="req">*</span></label>
+            <input type="number" id="f-peso" placeholder="70" min="30" max="200" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label>Altura (cm) <span class="req">*</span></label>
+            <input type="number" id="f-altura" placeholder="170" min="100" max="230" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label>IMC</label>
+            <input type="text" id="f-imc" placeholder="—" readonly style="color:var(--tx-d);cursor:default;">
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-next" onclick="ir(2)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA 2: Actividad física -->
+    <div class="screen" id="s2">
+      <div class="card">
+        <div class="card-title">Tu actividad física 🏃</div>
+        <div class="card-sub">Esto ayuda al médico a contextualizar tu evaluación.</div>
+
+        <div class="field">
+          <label>Deporte / actividad principal <span class="req">*</span></label>
+          <input type="text" id="f-dep" placeholder="Ej: Crossfit, Fútbol, Running...">
+        </div>
+
+        <div class="field">
+          <label>Gimnasio / club / box <span class="nota">(opcional)</span></label>
+          <input type="text" id="f-gym" placeholder="Ej: CrossFit Mendoza, Club Andino...">
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Nivel de actividad <span class="req">*</span></label>
+            <select id="f-nivel">
+              <option value="" disabled selected>Seleccioná...</option>
+              <option value="Recreativo">Recreativo</option>
+              <option value="Amateur">Amateur</option>
+              <option value="Competitivo">Competitivo</option>
+              <option value="Elite">Elite</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Años entrenando</label>
+            <input type="number" id="f-anios" placeholder="5" min="0" max="60" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Primera vez en MedicalClub?</label>
+          <select id="f-primera">
+            <option value="si">Sí, es mi primera vez</option>
+            <option value="no">No, ya vine antes</option>
+          </select>
+        </div>
+
+        <div class="section-label">Estudios previos</div>
+
+        <div class="field">
+          <label>¿Realizaste ergometría en los últimos 2 años?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-ergo-si" onclick="yn('ergo','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-ergo-no" onclick="yn('ergo','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Realizaste apto cardiológico deportivo en el último año?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-apto-si" onclick="yn('apto','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-apto-no" onclick="yn('apto','no')">✗ No</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="ir(1)">← Atrás</button>
+        <button class="btn-next" onclick="ir(3)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA 3: Antecedentes de salud -->
+    <div class="screen" id="s3">
+      <div class="card">
+        <div class="card-title">Antecedentes de salud ❤️</div>
+        <div class="card-sub">Esta info es confidencial y la usa el médico para personalizar tu evaluación. Respondé lo más honesto posible.</div>
+
+        <div class="alert">⚕️ Estas preguntas son las mismas que te va a hacer el cardiólogo. Completarlas antes ahorra tiempo en el consultorio.</div>
+
+        <div class="section-label">Síntomas durante el ejercicio</div>
+
+        <div class="field">
+          <label>¿Sentís dolor o presión en el pecho al hacer ejercicio?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-dolor-si" onclick="yn('dolor','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-dolor-no" onclick="yn('dolor','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Alguna vez te desmayaste o casi te desmayaste durante el ejercicio?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-desmayo-si" onclick="yn('desmayo','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-desmayo-no" onclick="yn('desmayo','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Sentís que te falta el aire más de lo esperado con el esfuerzo?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-disnea-si" onclick="yn('disnea','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-disnea-no" onclick="yn('disnea','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Notás palpitaciones o el corazón "acelerado" durante el ejercicio?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-palpit-si" onclick="yn('palpit','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-palpit-no" onclick="yn('palpit','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:20px;">Antecedentes personales</div>
+
+        <div class="field">
+          <label>¿Te diagnosticaron alguna enfermedad cardíaca?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-cardio-si" onclick="yn('cardio','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-cardio-no" onclick="yn('cardio','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Tenés presión arterial alta (hipertensión)?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-hta-si" onclick="yn('hta','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-hta-no" onclick="yn('hta','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Tomás alguna medicación de forma regular?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-meds-si" onclick="yn('meds','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-meds-no" onclick="yn('meds','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="field" id="field-meds-detalle" style="display:none;">
+          <label>¿Cuál/es medicamentos?</label>
+          <input type="text" id="f-meds-detalle" placeholder="Ej: Enalapril, Metformina...">
+        </div>
+
+        <div class="field">
+          <label>¿Fumás o fumaste habitualmente?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-tabaco-si" onclick="yn('tabaco','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-tabaco-no" onclick="yn('tabaco','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:20px;">Antecedentes familiares</div>
+
+        <div class="field">
+          <label>¿Algún familiar menor de 50 años falleció de muerte súbita o infarto?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-msf-si" onclick="yn('msf','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-msf-no" onclick="yn('msf','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>¿Algún familiar tiene enfermedad cardíaca diagnosticada antes de los 50 años?</label>
+          <div class="yn-group">
+            <button class="yn-btn" id="yn-famcardio-si" onclick="yn('famcardio','si')">✓ Sí</button>
+            <button class="yn-btn" id="yn-famcardio-no" onclick="yn('famcardio','no')">✗ No</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Observaciones adicionales <span class="nota">(opcional)</span></label>
+          <textarea id="f-obs" rows="3" placeholder="Cualquier dato extra que quieras que sepa el médico..." style="resize:none;"></textarea>
+        </div>
+      </div>
+
+      <div class="loader" id="loader">Enviando... un momento ⏳</div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="ir(2)">← Atrás</button>
+        <button class="btn-next" id="btn-enviar" onclick="enviar()">Enviar mis datos →</button>
+      </div>
+    </div>
+
+  </div><!-- /wrap -->
+</div><!-- /screen-form -->
+
+<!-- PANTALLA ÉXITO -->
+<div id="screen-ok">
+  <div class="top">
+    <div class="wordmark">Medical<span>Club</span></div>
+    <div class="tagline">Evaluación Cardiovascular · Mendoza</div>
+  </div>
+  <div style="text-align:center;padding:60px 20px;">
+    <div class="ok-ico">✅</div>
+    <div class="ok-title">¡Listo, ya tenemos todo!</div>
+    <div class="ok-sub">Tus datos llegaron. En un momento te llaman para pasar al consultorio.</div>
+    <div class="ok-badge">MedicalClub · Mendoza</div>
+  </div>
+</div>
+
+<script>
+var GS='https://script.google.com/macros/s/AKfycbz3tZkTVY_CYM5afzA0c3fQsg6-3Q34_LGxnVQbAxpWn11-ZGc0434seY8jOAGtogC9/exec';
+
+// State
+var vals = { ergo:'', apto:'', dolor:'', desmayo:'', disnea:'', palpit:'', cardio:'', hta:'', meds:'', tabaco:'', msf:'', famcardio:'' };
+
+function v(id){return(document.getElementById(id)||{}).value||'';}
+
+// Pre-fill nombre from URL ?nombre=...
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var nb = params.get('nombre');
+  if(nb){
+    var el = document.getElementById('f-nombre');
+    if(el){ el.value = decodeURIComponent(nb); }
+  }
+})();
+
+function err(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  el.style.borderColor='var(--rd)';
+  el.focus();
+  setTimeout(function(){el.style.borderColor='';},2000);
+}
+
+// IMC auto-calc
+document.getElementById('f-peso').addEventListener('input', calcImc);
+document.getElementById('f-altura').addEventListener('input', calcImc);
+function calcImc(){
+  var p=parseFloat(v('f-peso'));
+  var h=parseFloat(v('f-altura'))/100;
+  if(p>0&&h>0){
+    var imc=(p/(h*h)).toFixed(1);
+    document.getElementById('f-imc').value=imc;
+  } else {
+    document.getElementById('f-imc').value='';
+  }
+}
+
+// Yes/No buttons
+function yn(key, val){
+  vals[key]=val;
+  var si=document.getElementById('yn-'+key+'-si');
+  var no=document.getElementById('yn-'+key+'-no');
+  si.className='yn-btn'+(val==='si'?' sel-si':'');
+  no.className='yn-btn'+(val==='no'?' sel-no':'');
+  // Mostrar detalle de medicamentos
+  if(key==='meds'){
+    document.getElementById('field-meds-detalle').style.display=val==='si'?'block':'none';
+  }
+}
+
+// Progress dots
+function updateProgress(step){
+  for(var i=1;i<=3;i++){
+    var pd=document.getElementById('pd'+i);
+    pd.className='step-dot'+(i<step?' done':i===step?' active':'');
+  }
+}
+
+// Navegación entre pantallas
+function ir(step){
+  if(step===2 && !validar1())return;
+  if(step===3 && !validar2())return;
+  // Ocultar todas
+  for(var i=1;i<=3;i++) document.getElementById('s'+i).className='screen';
+  document.getElementById('s'+step).className='screen active';
+  updateProgress(step);
+  window.scrollTo(0,0);
+}
+
+function validar1(){
+  if(!v('f-nombre').trim()){err('f-nombre');return false;}
+  if(!v('f-edad').trim()){err('f-edad');return false;}
+  if(!v('f-tel').trim()){err('f-tel');return false;}
+  if(!v('f-peso').trim()){err('f-peso');return false;}
+  if(!v('f-altura').trim()){err('f-altura');return false;}
+  return true;
+}
+function validar2(){
+  if(!v('f-dep').trim()){err('f-dep');return false;}
+  if(!v('f-nivel')){err('f-nivel');return false;}
+  return true;
+}
+
+async function enviar(){
+  var btn=document.getElementById('btn-enviar');
+  var loader=document.getElementById('loader');
+  btn.disabled=true;
+  loader.style.display='block';
+
+  var data={
+    action:'saveIngreso',
+    ingreso:{
+      nombre:v('f-nombre').trim(),
+      edad:parseInt(v('f-edad'))||0,
+      tel:v('f-tel').trim(),
+      mail:v('f-mail').trim(),
+      peso:parseFloat(v('f-peso'))||0,
+      altura:parseFloat(v('f-altura'))||0,
+      imc:v('f-imc'),
+      dep:v('f-dep').trim(),
+      gym:v('f-gym').trim(),
+      nivel:v('f-nivel'),
+      anios:parseInt(v('f-anios'))||0,
+      primera:v('f-primera'),
+      ergo:vals.ergo,
+      apto:vals.apto,
+      dolor:vals.dolor,
+      desmayo:vals.desmayo,
+      disnea:vals.disnea,
+      palpit:vals.palpit,
+      cardio:vals.cardio,
+      hta:vals.hta,
+      meds:vals.meds,
+      meds_detalle:v('f-meds-detalle').trim(),
+      tabaco:vals.tabaco,
+      msf:vals.msf,
+      famcardio:vals.famcardio,
+      obs:v('f-obs').trim(),
+      ts:Date.now()
+    }
+  };
+
+  try{
+    await fetch(GS,{
+      method:'POST',
+      redirect:'follow',
+      credentials:'omit',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(data)
+    });
+    document.getElementById('screen-form').style.display='none';
+    document.getElementById('screen-ok').style.display='block';
+  }catch(e){
+    btn.disabled=false;
+    loader.style.display='none';
+    alert('Hubo un error al enviar. Avisale a la secretaria.');
+  }
+}
+</script>
+</body>
+</html>
